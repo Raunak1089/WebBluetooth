@@ -47,7 +47,7 @@
       // Send the text message to the device
       return characteristic.writeValue(text);
     })
-    .catch(error) => {
+    .catch(error => {
       // Handle the error
       console.error(error);
     });
