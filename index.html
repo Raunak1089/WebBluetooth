@@ -1,0 +1,55 @@
+<!-- This is the HTML code for the page -->
+<html>
+  <head>
+    <title>Bluetooth Text Sender</title>
+  </head>
+  <body>
+    <!-- This is the form for the text message -->
+    <form id="text-form">
+      <label for="text-input">Enter your text message:</label><br>
+      <input type="text" id="text-input" name="text-input"><br>
+      <button type="submit">Send Text</button>
+    </form> 
+  </body>
+</html>
+
+<!-- This is the JavaScript code for the page -->
+<script>
+  // Get the form element
+  const form = document.getElementById('text-form');
+
+  // Handle the form submission event
+  form.addEventListener('submit', e => {
+    // Prevent the form from being submitted
+    e.preventDefault();
+
+    // Get the text message from the form
+    const text = document.getElementById('text-input').value;
+
+    // Request access to Bluetooth
+    navigator.bluetooth.requestDevice({
+      // Filters to apply to the list of device returned by the API
+      filters: [{services: ['bluetooth_serial']}]
+    })
+    .then(device => {
+      // Connect to the device
+      return device.gatt.connect();
+    })
+    .then(server => {
+      // Get the Bluetooth serial service
+      return server.getPrimaryService('bluetooth_serial');
+    })
+    .then(service => {
+      // Get the Bluetooth serial characteristic
+      return service.getCharacteristic('bluetooth_serial_characteristic');
+    })
+    .then(characteristic => {
+      // Send the text message to the device
+      return characteristic.writeValue(text);
+    })
+    .catch(error => {
+      // Handle the error
+      console.error(error);
+    });
+  });
+</script>
